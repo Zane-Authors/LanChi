@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LanChi Engine | MCP Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #9d50bb;
+            --secondary: #6e48aa;
+            --accent: #00d2ff;
+            --bg: #0f0c29;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(15, 12, 41, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #302b63, #0f0c29, #24243e);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(157, 80, 187, 0.5);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            color: var(--accent);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        /* Skills Section */
+        .skills-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .skill-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .skill-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .skill-name {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .endpoint-url {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loader {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .loader-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            box-shadow: 0 0 10px var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        /* UI Interactions */
+        .btn-refresh {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(5deg);
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            padding-bottom: 2rem;
+        }
+
+        .badge-new {
+            background: #ff3e00;
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"><div class="loader-bar" id="loaderBar"></div></div>
+
+    <div class="container">
+        <header>
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <i data-lucide="zap" fill="white"></i>
+                </div>
+                <div>
+                    <h1>LanChi Engine</h1>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Universal MCP Core</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn-refresh" onclick="fetchStatus()">
+                    <i data-lucide="refresh-cw" size="18" id="refreshIcon"></i>
+                    Sync
+                </button>
+                <div class="status-badge">
+                    <div class="dot"></div>
+                    <span>SYSTEM ONLINE</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card" style="animation-delay: 0.1s;">
+                <div class="card-header">
+                    <i data-lucide="cpu" class="card-icon"></i>
+                    <span class="card-title">Memory Usage</span>
+                </div>
+                <div class="card-value" id="ramValue">-- %</div>
+                <div style="margin-top: 1rem; height: 6px; background: rgba(0,0,0,0.2); border-radius: 10px;">
+                    <div id="ramProgress" style="height: 100%; width: 0%; background: var(--accent); border-radius: 10px; transition: width 1s;"></div>
+                </div>
+            </div>
+
+            <div class="card" style="animation-delay: 0.2s;">
+                <div class="card-header">
+                    <i data-lucide="activity" class="card-icon"></i>
+                    <span class="card-title">Active Port</span>
+                </div>
+                <div class="card-value" style="color: var(--accent);">45050</div>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary);">Listening for MCP Clients</p>
+            </div>
+
+            <div class="card" style="animation-delay: 0.3s;">
+                <div class="card-header">
+                    <i data-lucide="box" class="card-icon"></i>
+                    <span class="card-title">Server Version</span>
+                </div>
+                <div class="card-value" id="versionValue">v1.0.0</div>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary);">Enterprise Build</p>
+            </div>
+        </div>
+
+        <section class="skills-section">
+            <div class="section-header">
+                <h2 style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                    <i data-lucide="layers" style="color: var(--primary);"></i>
+                    Dynamic Skills Registry
+                </h2>
+                <div class="status-badge" style="font-size: 0.8rem;">
+                    <span id="skillCount">0</span> LOADED
+                </div>
+            </div>
+
+            <div class="skills-grid" id="skillsGrid">
+                <!-- Skills populated by JS -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+                    Loading AI Capabilities...
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="margin-top: 2rem; background: rgba(0,0,0,0.2);">
+            <div class="card-header">
+                <i data-lucide="link" class="card-icon"></i>
+                <span class="card-title">MCP Connection Endpoints</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Streamable HTTP (Kiro/Windsurf)</span>
+                    <span class="endpoint-url">BASE_URL/mcp</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>SSE Transport</span>
+                    <span class="endpoint-url">BASE_URL/mcp/sse</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>JSON-RPC Base</span>
+                    <span class="endpoint-url">BASE_URL/mcp/rpc</span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 LanChi Engine Core. Powered by <strong>Zane Authors</strong> Prompt Engineering.</p>
+            <p style="margin-top: 0.5rem; opacity: 0.5;">Optimized for Ultra-Fast AI Development</p>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        async function fetchStatus() {
+            const bar = document.getElementById('loaderBar');
+            const icon = document.getElementById('refreshIcon');
+            
+            bar.style.width = '30%';
+            icon.style.animation = 'spin 1s linear infinite';
+
+            try {
+                const response = await fetch('/mcp/status');
+                const data = await response.json();
+                
+                bar.style.width = '70%';
+                
+                // Update Stats
+                document.getElementById('ramValue').innerText = data.ram;
+                document.getElementById('ramProgress').style.width = data.ram;
+                document.getElementById('versionValue').innerText = 'v' + data.version;
+                document.getElementById('skillCount').innerText = data.skills.length;
+
+                // Update Skills Grid
+                const grid = document.getElementById('skillsGrid');
+                grid.innerHTML = '';
+                
+                data.skills.forEach(skill => {
+                    const el = document.createElement('div');
+                    el.className = 'skill-item';
+                    const isNew = skill.name === 'mind_mapper' || skill.name === 'time_scheduler';
+                    
+                    el.innerHTML = `
+                        <div class="skill-name">
+                            <i data-lucide="sparkles" size="14"></i>
+                            ${skill.name.replace('_', ' ').toUpperCase()}
+                            ${isNew ? '<span class="badge-new">NEW</span>' : ''}
+                        </div>
+                        <p class="skill-desc">${skill.description}</p>
+                    `;
+                    grid.appendChild(el);
+                });
+
+                lucide.createIcons();
+                bar.style.width = '100%';
+                setTimeout(() => bar.style.width = '0%', 400);
+
+            } catch (err) {
+                console.error('Failed to sync:', err);
+                bar.style.background = '#ff3e00';
+            } finally {
+                icon.style.animation = 'none';
+            }
+        }
+
+        // Initial fetch
+        fetchStatus();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(fetchStatus, 30000);
+
+        // Define spin animation
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

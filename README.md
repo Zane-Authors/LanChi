@@ -6,10 +6,19 @@ LanChi is a high-performance, premium Model Context Protocol (MCP) Server. It br
 
 - **Hybrid Memory Architecture**: Seamlessly combines **ChromaDB** (Vector) for semantic knowledge and **DuckDB** (SQL) for persistent history and metadata.
 - **Dynamic Skill Ecosystem**: Modular, hot-reloadable skills that can be added or updated without server restarts.
-- **Pure Python Mind Mapping**: Generate interactive relationship graphs using Pyvis & NetworkX trực tiếp trên Windows/IDE.
+- **Pure Python Mind Mapping**: Generate interactive relationship graphs using Pyvis & NetworkX directly on Windows/IDE.
 - **Intelligent Context Management**: Automatic summarization and "fact" extraction to optimize token usage and memory retrieval.
-- **Enterprise-Grade Security**: API Key authentication cho cả SSE và JSON-RPC.
-- **Real-time Telemetry**: High-fidelity terminal UI (Rich) hiển thị trạng thái của FastAPI, ChromaDB, và DuckDB.
+- **Enterprise-Grade Security**: API Key authentication for both SSE and JSON-RPC.
+- **Real-time Telemetry**: High-fidelity terminal UI (Rich) showing the status of FastAPI, ChromaDB, and DuckDB.
+
+## 🌐 Web Dashboard (Admin UI)
+
+Access the admin interface at: **`http://localhost:45050/ui`**
+
+The Dashboard provides:
+- **Real-time Monitoring**: RAM, CPU, and server status.
+- **Skill Registry**: Library of currently loaded AI skills.
+- **Endpoints**: List of available MCP connection ports.
 
 ## 🧰 Specialized Tools (10+ Core & Dynamic)
 
@@ -17,7 +26,7 @@ LanChi is a high-performance, premium Model Context Protocol (MCP) Server. It br
 
 - `search_context`: Semantic search across unified memory.
 - `memorize_info`: Persistent storage for key findings.
-- `skill_context_summarizer`: Nén ngữ cảnh, trích xuất sự thật (Facts).
+- `skill_context_summarizer`: Compress context and extract facts.
 
 ### ⚙️ System & Utilities
 
@@ -34,13 +43,13 @@ LanChi is a high-performance, premium Model Context Protocol (MCP) Server. It br
 
 ## 🛠️ Configuration (IDE Connection)
 
-Thêm cấu hình sau vào `mcp_config.json` của bạn:
+Add the following configuration to your `mcp_config.json`:
 
 ```json
 {
   "mcpServers": {
     "lanchi": {
-      "serverURL": "http://localhost:5050/mcp/rpc",
+      "serverURL": "http://localhost:45050/mcp/rpc",
       "headers": {
         "X-API-KEY": "LANCHI_SECRET_KEY"
       }
@@ -52,18 +61,20 @@ Thêm cấu hình sau vào `mcp_config.json` của bạn:
 ## 🏗️ Project Structure
 
 - `src/`: Core engine source code (API, Context, History, UI).
-- `skills/`: A modular repository of agent capabilities (YAML + Python logic).
+- `src/static/`: Web Dashboard assets (Glassmorphism).
+- `skills/`: Repository of skill interface definitions (YAML/MD).
+- `src/plugins/`: Repository of skill execution logic (Python).
 - `db/`: Persistent storage for ChromaDB & DuckDB.
 
 ## 🚀 Running LanChi
 
 ```bash
-uv run uvicorn src.main:app --port 5050 --reload
+uv run lanchi
 ```
 
 ---
 
 > [!IMPORTANT]
-> LanChi được tối ưu hóa cho **Windows 11** và **Python 3.12+**. Đảm bảo đã cài đặt `uv` để có trải nghiệm tốt nhất.
+> LanChi is optimized for **Windows 11** and **Python 3.12+**. Ensure `uv` is installed for the best experience.
 
 Developed by **Zane Authors** - Empowering the next generation of AI Agents. 🌌

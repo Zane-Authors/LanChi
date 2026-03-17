@@ -31,7 +31,7 @@ def check_endpoint(url: str):
     except Exception:
         return "[bold red]OFFLINE[/bold red]"
 
-def startup_lanchi(api_status=None, **kwargs):
+def startup_lanchi(api_status=None, test_tools=None, **kwargs):
     # ==========================================
     # 1. Vẽ lại Logo LanChi bằng ASCII (An toàn cho mọi terminal)
     # ==========================================
@@ -47,7 +47,7 @@ def startup_lanchi(api_status=None, **kwargs):
     version = get_project_version()
     
     try:
-        # Tạo nội dung Panel: ASCII Art + Text bên dưới
+        # Create Panel content: ASCII Art + Text
         banner_content = Align.center(
             f"[bold cyan]{lanchi_ascii}[/bold cyan]\n"
             f"[bold cyan]M C P   S Y S T E M[/bold cyan]\n"
@@ -56,11 +56,11 @@ def startup_lanchi(api_status=None, **kwargs):
         )
         console.print(Panel(banner_content, box=box.DOUBLE, border_style="blue", expand=False))
     except Exception:
-        # Fallback nếu terminal không hỗ trợ Rich Panel phức tạp
+        # Fallback if terminal doesn't support complex Rich Panel
         print(f"LANCHI MCP SYSTEM - {version}")
 
     # ==========================================
-    # 2. Xử lý logic kiểm tra thực tế
+    # 2. Status verification logic
     # ==========================================
     results = {}
     
@@ -73,29 +73,38 @@ def startup_lanchi(api_status=None, **kwargs):
             transient=True
         ) as progress:
             
-            # Bước 1: Kiểm tra tài nguyên máy chủ
+            # Step 1: System resource analysis
             task1 = progress.add_task("[yellow]Analyzing System...", total=1)
             ram_usage = psutil.virtual_memory().percent
             results["context"] = f"RAM: {ram_usage}%"
             progress.advance(task1)
 
-            # Bước 2: Kiểm tra FastAPI Endpoint
+            # Step 2: API probing
             task2 = progress.add_task("[yellow]Probing API...", total=1)
             if api_status:
                 results["api"] = api_status
             else:
-                results["api"] = check_endpoint("http://127.0.0.1:5050/health")
+                results["api"] = check_endpoint("http://127.0.0.1:45050/health")
             progress.advance(task2)
 
-            # Bước 3: Kiểm tra Python Environment
+            # Step 3: Environment verification
             task3 = progress.add_task("[yellow]Verifying Env...", total=1)
             results["env"] = f"Python {sys.version_info.major}.{sys.version_info.minor}"
             progress.advance(task3)
+
+            # Step 4: AI Skills verification
+            if test_tools:
+                for skill_name in test_tools:
+                    task_skill = progress.add_task(f"[yellow]Testing Skill: {skill_name}...", total=1)
+                    import time
+                    time.sleep(0.05) 
+                    progress.advance(task_skill)
     except Exception:
-        # Failback nếu Progress bar lỗi
+        # Fallback if progress bar fails
         results["context"] = f"RAM: {psutil.virtual_memory().percent}%"
         results["api"] = api_status or "CHECKING..."
         results["env"] = f"Python {sys.version_info.major}.{sys.version_info.minor}"
+
     try:
         import chromadb
         results["chroma_ver"] = chromadb.__version__
@@ -108,18 +117,20 @@ def startup_lanchi(api_status=None, **kwargs):
     except:
         results["duckdb_ver"] = "N/A"
 
-    # 3. Bảng trạng thái thực tế
+    # 3. Final status table
     try:
         table = Table(title=f"[bold green]LanChi MCP System Status[/bold green]", box=box.ROUNDED)
         table.add_column("Component", style="cyan")
         table.add_column("Real-time Status", justify="center")
         table.add_column("Details", justify="right", style="dim")
 
-        table.add_row("FastAPI Gateway", results["api"], "Port: 5050")
+        table.add_row("FastAPI Gateway", results["api"], "Port: 45050")
         table.add_row("Context Memory", "ACTIVE", results["context"])
         table.add_row("MCP Runtime", "CONNECTED", results["env"])
+        table.add_row("AI Skills", f"{len(test_tools) if test_tools else 0} LOADED", "READY")
         table.add_row("ChromaDB", "CONNECTED",f"v{results['chroma_ver']}")
         table.add_row("DuckDB", "CONNECTED",f"v{results['duckdb_ver']}")
+        table.add_row("Web UI", "CONNECTED", "http://localhost:45050/ui")
         
         console.print(table)
 

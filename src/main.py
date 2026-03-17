@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 import logging
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
@@ -44,7 +45,7 @@ async def handle_list_tools() -> list[types.Tool]:
                     "query": {"type": "string"},
                     "project_id": {"type": "string", "default": "default"},
                 },
-                "required": ["query"],
+                "required": ["query", "project_id"],
             },
         ),
         make_tool(
@@ -56,7 +57,7 @@ async def handle_list_tools() -> list[types.Tool]:
                     "text": {"type": "string"},
                     "project_id": {"type": "string", "default": "default"},
                 },
-                "required": ["text"],
+                "required": ["text", "project_id"],
             },
         ),
         make_tool(
@@ -92,7 +93,7 @@ async def handle_list_tools() -> list[types.Tool]:
                 input_schema={
                     "type": "object",
                     "properties": props,
-                    "required": list(skill['parameters'].keys()) if skill['parameters'] else [],
+                    "required": (list(skill['parameters'].keys()) if skill['parameters'] else []) + ["project_id"],
                 },
             )
         )
@@ -156,12 +157,9 @@ async def handle_call_tool(name: str, arguments: dict | None) -> list[types.Text
     
     return [types.TextContent(type="text", text=str(result_data))]
 
-# 3. Initialize FastAPI
-app = FastAPI(title="LanChi MCP Server")
-
-@app.on_event("startup")
-async def startup_event():
-    # Kết nối cơ sở dữ liệu
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Kết nối cơ sở dữ liệu
     from src.history import history_db
     try:
         history_db.connect()
@@ -170,16 +168,50 @@ async def startup_event():
         logger.error(f"Failed to connect to DuckDB: {e}")
 
     # Hiển thị banner (ONLINE)
-    LCNotification.startup_lanchi(api_status="[bold green]ONLINE[/bold green]")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    # Ngắt kết nối cơ sở dữ liệu để giải phóng file lock (rất quan trọng trên Windows)
+    skills = [s['name'] for s in skill_manager.list_loaded_skills()]
+    LCNotification.startup_lanchi(api_status="[bold green]ONLINE[/bold green]", test_tools=skills)
+    
+    yield
+    
+    # Shutdown: Ngắt kết nối cơ sở dữ liệu
     from src.history import history_db
     from src.context import context_manager
     history_db.close()
     context_manager.close()
     logger.info("Shutdown complete.")
+
+# 3. Initialize FastAPI
+app = FastAPI(title="LanChi MCP Server", lifespan=lifespan)
+
+from fastapi.staticfiles import StaticFiles
+import os
+
+# Create static directory if not exists
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if not os.path.exists(static_dir):
+    os.makedirs(static_dir)
+
+# Mount UI
+app.mount("/ui", StaticFiles(directory=static_dir, html=True), name="ui")
+
+@app.get("/mcp/status")
+async def get_mcp_status():
+    """Endpoint for the Web UI to fetch real-time stats."""
+    import psutil
+    loaded_skills = skill_manager.list_loaded_skills()
+    return {
+        "server": "LanChi Engine",
+        "version": "1.0.0",
+        "status": "online",
+        "ram": f"{psutil.virtual_memory().percent}%",
+        "cpu": f"{psutil.cpu_percent()}%",
+        "skills": loaded_skills,
+        "endpoints": {
+            "streamable": "/mcp",
+            "sse": "/mcp/sse",
+            "rpc": "/mcp/rpc"
+        }
+    }
 
 
 # 4. Setup SSE Transport
@@ -357,12 +389,12 @@ async def health_check():
         }
     }
 
+def run_server():
+    """Entry point for the project script."""
+    import uvicorn
+    uvicorn.run("src.main:app", host="0.0.0.0", port=45050, reload=True)
+
 if __name__ == "__main__":
-
-    # Khi chạy trực tiếp, có thể nó chưa online ngay, nhưng thường là đang khởi động
-    # Ở đây chúng ta để nó tự check nếu không ở chế độ uvicorn reload (vì reload sẽ gọi startup_event)
-    pass 
-
     import sys
     if "--stdio" in sys.argv:
         from mcp.server.stdio import stdio_server
@@ -376,5 +408,4 @@ if __name__ == "__main__":
         import asyncio
         asyncio.run(run_stdio())
     else:
-        import uvicorn
-        uvicorn.run(app, host="0.0.0.0", port=5050)
+        run_server()

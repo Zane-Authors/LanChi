@@ -16,3 +16,9 @@ dependencies = [
     "rich>=14.3.3",
     "uvicorn>=0.41.0",
 ]
+[tool.setuptools]
+package-dir = {"" = "."}
+packages = ["src", "src.plugins"]
+
+[project.scripts]
+lanchi = "src.main:run_server"
