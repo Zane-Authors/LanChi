@@ -10,6 +10,7 @@ from src.skills import skill_manager
 from src.context import context_manager
 import uvicorn
 from . import LCNotification
+from src.history import history_db
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -160,7 +161,6 @@ async def handle_call_tool(name: str, arguments: dict | None) -> list[types.Text
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Kết nối cơ sở dữ liệu
-    from src.history import history_db
     try:
         history_db.connect()
         logger.info("Connected to DuckDB history database.")
@@ -174,7 +174,6 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown: Ngắt kết nối cơ sở dữ liệu
-    from src.history import history_db
     from src.context import context_manager
     history_db.close()
     context_manager.close()
@@ -206,6 +205,7 @@ async def get_mcp_status():
         "ram": f"{psutil.virtual_memory().percent}%",
         "cpu": f"{psutil.cpu_percent()}%",
         "skills": loaded_skills,
+        "agent_chat": history_db.get_agent_chat_history(limit=20),
         "endpoints": {
             "streamable": "/mcp",
             "sse": "/mcp/sse",
@@ -213,6 +213,14 @@ async def get_mcp_status():
         }
     }
 
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(status_code=204)
+
+@app.get("/.well-known/{path:path}", include_in_schema=False)
+async def well_known_proxy(path: str):
+    return Response(status_code=404)
 
 # 4. Setup SSE Transport
 sse = SseServerTransport("/mcp/messages")
@@ -312,7 +320,7 @@ async def handle_rpc(request: Request):
                         "resources": {"listChanged": False, "subscribe": False},
                         "prompts": {"listChanged": False}
                     },
-                    "serverInfo": {"name": "LanChi-Server", "version": "0.1.0"}
+                    "serverInfo": {"name": "LanChi-Server", "version": "0.1.1"}
                 }
             }
         
@@ -329,6 +337,29 @@ async def handle_rpc(request: Request):
         # Lifecycle: Resource/Tool/Prompt changes (notifications)
         if method in ["notifications/resources/list_changed", "notifications/tools/list_changed", "notifications/prompts/list_changed"]:
             return Response(status_code=200)
+
+        # Resource Listing (Silence Kiro warnings)
+        if method == "resources/list":
+            return {
+                "jsonrpc": "2.0",
+                "id": request_id,
+                "result": {"resources": []}
+            }
+
+        if method == "resources/templates/list":
+            return {
+                "jsonrpc": "2.0",
+                "id": request_id,
+                "result": {"resourceTemplates": []}
+            }
+
+        # Prompt Listing (Silence Kiro warnings)
+        if method == "prompts/list":
+            return {
+                "jsonrpc": "2.0",
+                "id": request_id,
+                "result": {"prompts": []}
+            }
 
         # Tool Listing
         if method == "tools/list":

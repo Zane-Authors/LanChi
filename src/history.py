@@ -52,7 +52,66 @@ class HistoryManager:
                 metadata JSON
             )
         """)
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS agent_group_chat (
+                id VARCHAR PRIMARY KEY,
+                agent_id VARCHAR,
+                agent_name VARCHAR,
+                content TEXT,
+                project_id VARCHAR,
+                timestamp TIMESTAMP
+            )
+        """)
         logger.info(f"DuckDB initialized at {self.db_path}")
+
+    async def log_agent_message(self, agent_id: str, agent_name: str, content: str, project_id: str = "default"):
+        """Logs a message sent from one agent to the group chat."""
+        if not self.conn: self.connect()
+        import uuid
+        message_id = str(uuid.uuid4())
+        timestamp = datetime.datetime.now()
+        
+        async with self.write_lock:
+            self.conn.execute("""
+                INSERT INTO agent_group_chat (id, agent_id, agent_name, content, project_id, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (message_id, agent_id, agent_name, content, project_id, timestamp))
+            logger.info(f"Agent message logged: [{agent_name}] in [{project_id}]")
+        return {"id": message_id, "timestamp": timestamp.isoformat()}
+
+    def get_agent_chat_history(self, project_id: str = None, limit: int = 20):
+        """Retrieves recent group chat history. If project_id is None, returns messages from all projects."""
+        if not self.conn: self.connect()
+        
+        if project_id:
+            query = """
+                SELECT agent_name, content, timestamp, agent_id, project_id
+                FROM agent_group_chat 
+                WHERE project_id = ? 
+                ORDER BY timestamp DESC 
+                LIMIT ?
+            """
+            params = (project_id, limit)
+        else:
+            query = """
+                SELECT agent_name, content, timestamp, agent_id, project_id
+                FROM agent_group_chat 
+                ORDER BY timestamp DESC 
+                LIMIT ?
+            """
+            params = (limit,)
+
+        result = self.conn.execute(query, params).fetchall()
+        
+        return [
+            {
+                "agent_name": r[0], 
+                "content": r[1], 
+                "timestamp": r[2].isoformat(), 
+                "agent_id": r[3],
+                "project_id": r[4]
+            } for r in result
+        ]
 
     async def log_chat(self, role: str, content: str, project_id: str = "default", session_id: str = "default"):
         if not self.conn: self.connect()

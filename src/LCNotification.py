@@ -19,7 +19,7 @@ def get_project_version():
             data = tomllib.load(f)
             return data["project"].get("version", "unknown")
     except Exception:
-        return "v0.1.0"
+        return "v0.1.1"
 
 def check_endpoint(url: str):
     """Kiểm tra thực tế trạng thái của API"""

@@ -36,7 +36,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
@@ -93,11 +93,21 @@
             box-shadow: 0 0 10px #00ff88;
         }
 
-        .grid {
+        .grid-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1100px) {
+            .main-layout { grid-template-columns: 1fr; }
         }
 
         .card {
@@ -149,7 +159,6 @@
             border-radius: 24px;
             padding: 2rem;
             backdrop-filter: blur(20px);
-            margin-top: 2rem;
         }
 
         .section-header {
@@ -161,7 +170,7 @@
 
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1rem;
         }
 
@@ -170,12 +179,7 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 1.2rem;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .skill-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: scale(1.02);
+            transition: all 0.2s;
         }
 
         .skill-name {
@@ -185,14 +189,92 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .skill-desc {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
             line-height: 1.4;
         }
 
+        /* Chat Section */
+        .chat-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .chat-message {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .msg-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        .msg-sender {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .msg-project {
+            background: rgba(0, 210, 255, 0.15);
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .msg-time {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .msg-bubble {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 0.8rem 1.2rem;
+            border-radius: 4px 16px 16px 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border-left: 3px solid var(--primary);
+            max-width: 90%;
+        }
+
+        .msg-bubble.windsurf { border-left-color: #00d2ff; }
+        .msg-bubble.kiro { border-left-color: #9d50bb; }
+
+        /* General UI */
         .endpoint-url {
             font-family: 'JetBrains Mono', monospace;
             background: rgba(0, 0, 0, 0.3);
@@ -202,7 +284,6 @@
             color: #ccc;
         }
 
-        /* Animations */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -211,6 +292,11 @@
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .loader {
@@ -231,7 +317,6 @@
             transition: width 0.3s ease;
         }
 
-        /* UI Interactions */
         .btn-refresh {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--border);
@@ -249,6 +334,11 @@
             background: rgba(255, 255, 255, 0.2);
             transform: rotate(5deg);
         }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
         footer {
             margin-top: 4rem;
@@ -256,16 +346,6 @@
             color: var(--text-secondary);
             font-size: 0.9rem;
             padding-bottom: 2rem;
-        }
-
-        .badge-new {
-            background: #ff3e00;
-            color: white;
-            font-size: 0.6rem;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
         }
     </style>
 </head>
@@ -280,7 +360,7 @@
                 </div>
                 <div>
                     <h1>LanChi Engine</h1>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Universal MCP Core</p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Multi-Agent Collaborative Hub</p>
                 </div>
             </div>
 
@@ -296,7 +376,7 @@
             </div>
         </header>
 
-        <div class="grid">
+        <div class="grid-stats">
             <div class="card" style="animation-delay: 0.1s;">
                 <div class="card-header">
                     <i data-lucide="cpu" class="card-icon"></i>
@@ -310,11 +390,11 @@
 
             <div class="card" style="animation-delay: 0.2s;">
                 <div class="card-header">
-                    <i data-lucide="activity" class="card-icon"></i>
-                    <span class="card-title">Active Port</span>
+                    <i data-lucide="users" class="card-icon"></i>
+                    <span class="card-title">Connected Agents</span>
                 </div>
-                <div class="card-value" style="color: var(--accent);">45050</div>
-                <p style="margin-top: 0.5rem; color: var(--text-secondary);">Listening for MCP Clients</p>
+                <div class="card-value" style="color: var(--accent);" id="agentCount">2</div>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary);">Active Collaborators</p>
             </div>
 
             <div class="card" style="animation-delay: 0.3s;">
@@ -322,59 +402,69 @@
                     <i data-lucide="box" class="card-icon"></i>
                     <span class="card-title">Server Version</span>
                 </div>
-                <div class="card-value" id="versionValue">v1.0.0</div>
-                <p style="margin-top: 0.5rem; color: var(--text-secondary);">Enterprise Build</p>
+                <div class="card-value" id="versionValue">v0.1.1</div>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary);">Enterprise Build (Collab Mode)</p>
             </div>
         </div>
 
-        <section class="skills-section">
-            <div class="section-header">
-                <h2 style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
-                    <i data-lucide="layers" style="color: var(--primary);"></i>
-                    Dynamic Skills Registry
-                </h2>
-                <div class="status-badge" style="font-size: 0.8rem;">
-                    <span id="skillCount">0</span> LOADED
-                </div>
+        <div class="main-layout">
+            <div class="left-col">
+                <section class="skills-section">
+                    <div class="section-header">
+                        <h2 style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                            <i data-lucide="layers" style="color: var(--primary);"></i>
+                            AI Capabilities
+                        </h2>
+                        <div class="status-badge" style="font-size: 0.8rem;">
+                            <span id="skillCount">0</span> LOADED
+                        </div>
+                    </div>
+
+                    <div class="skills-grid" id="skillsGrid">
+                        <!-- Skills populated by JS -->
+                    </div>
+                </section>
+
+                <section class="card" style="margin-top: 2rem; background: rgba(0,0,0,0.2);">
+                    <div class="card-header">
+                        <i data-lucide="terminal" class="card-icon"></i>
+                        <span class="card-title">Connection Points</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.9rem;">HTTP Stream</span>
+                            <span class="endpoint-url">/mcp</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.9rem;">SSE Flux</span>
+                            <span class="endpoint-url">/mcp/sse</span>
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            <div class="skills-grid" id="skillsGrid">
-                <!-- Skills populated by JS -->
-                <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">
-                    Loading AI Capabilities...
+            <aside class="chat-section">
+                <div class="chat-header">
+                    <i data-lucide="message-square" style="color: var(--primary);"></i>
+                    <h2 style="font-size: 1.1rem; font-weight: 700;">Agent Group Chat</h2>
                 </div>
-            </div>
-        </section>
-
-        <section class="card" style="margin-top: 2rem; background: rgba(0,0,0,0.2);">
-            <div class="card-header">
-                <i data-lucide="link" class="card-icon"></i>
-                <span class="card-title">MCP Connection Endpoints</span>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>Streamable HTTP (Kiro/Windsurf)</span>
-                    <span class="endpoint-url">BASE_URL/mcp</span>
+                <div class="chat-messages" id="chatArea">
+                    <!-- Messages populated by JS -->
+                    <div style="text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 2rem;">
+                        Waiting for Agent activity...
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>SSE Transport</span>
-                    <span class="endpoint-url">BASE_URL/mcp/sse</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>JSON-RPC Base</span>
-                    <span class="endpoint-url">BASE_URL/mcp/rpc</span>
-                </div>
-            </div>
-        </section>
+            </aside>
+        </div>
 
         <footer>
-            <p>&copy; 2026 LanChi Engine Core. Powered by <strong>Zane Authors</strong> Prompt Engineering.</p>
-            <p style="margin-top: 0.5rem; opacity: 0.5;">Optimized for Ultra-Fast AI Development</p>
+            <p>&copy; 2026 LanChi Engine Core. Multi-Agent Protocol. Powered by <strong>Zane Authors</strong>.</p>
         </footer>
     </div>
 
     <script>
         lucide.createIcons();
+        let lastMessageId = "";
 
         async function fetchStatus() {
             const bar = document.getElementById('loaderBar');
@@ -392,28 +482,54 @@
                 // Update Stats
                 document.getElementById('ramValue').innerText = data.ram;
                 document.getElementById('ramProgress').style.width = data.ram;
-                document.getElementById('versionValue').innerText = 'v' + data.version;
+                document.getElementById('versionValue').innerText = 'v0.1.1';
                 document.getElementById('skillCount').innerText = data.skills.length;
 
                 // Update Skills Grid
                 const grid = document.getElementById('skillsGrid');
                 grid.innerHTML = '';
-                
                 data.skills.forEach(skill => {
                     const el = document.createElement('div');
                     el.className = 'skill-item';
-                    const isNew = skill.name === 'mind_mapper' || skill.name === 'time_scheduler';
-                    
                     el.innerHTML = `
                         <div class="skill-name">
                             <i data-lucide="sparkles" size="14"></i>
-                            ${skill.name.replace('_', ' ').toUpperCase()}
-                            ${isNew ? '<span class="badge-new">NEW</span>' : ''}
+                            ${skill.name.replace('_', ' ').replace('skill_', '').toUpperCase()}
                         </div>
                         <p class="skill-desc">${skill.description}</p>
                     `;
                     grid.appendChild(el);
                 });
+
+                // Update Chat
+                const chatArea = document.getElementById('chatArea');
+                if (data.agent_chat && data.agent_chat.length > 0) {
+                    chatArea.innerHTML = '';
+                    // Show in chronological order (oldest top, newest bottom)
+                    data.agent_chat.reverse().forEach(msg => {
+                        const timeStr = msg.timestamp.substring(11, 16);
+                        const isWindsurf = msg.agent_name.toLowerCase().includes('windsurf');
+                        const isKiro = msg.agent_name.toLowerCase().includes('kiro');
+                        const bubbleClass = isWindsurf ? 'windsurf' : (isKiro ? 'kiro' : '');
+                        
+                        const msgEl = document.createElement('div');
+                        msgEl.className = 'chat-message';
+                        msgEl.innerHTML = `
+                            <div class="msg-meta">
+                                <span class="msg-sender">${msg.agent_name}</span>
+                                <span class="msg-project">${msg.project_id}</span>
+                                <span class="msg-time">${timeStr}</span>
+                            </div>
+                            <div class="msg-bubble ${bubbleClass}">
+                                ${msg.content}
+                            </div>
+                        `;
+                        chatArea.appendChild(msgEl);
+                    });
+                    
+                    // Auto-scroll to bottom
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }
 
                 lucide.createIcons();
                 bar.style.width = '100%';
@@ -430,8 +546,8 @@
         // Initial fetch
         fetchStatus();
         
-        // Auto-refresh every 30 seconds
-        setInterval(fetchStatus, 30000);
+        // Fast refresh for chat (every 5 seconds)
+        setInterval(fetchStatus, 5000);
 
         // Define spin animation
         const style = document.createElement('style');
